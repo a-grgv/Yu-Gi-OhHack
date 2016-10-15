@@ -7,6 +7,11 @@ public class Selector : MonoBehaviour {
 	GameObject selected;
 	GameObject enemySelected;
 
+	public GameObject defaultAttackEffect;
+
+	public GameObject green;
+	public GameObject red;
+
 	public Button attackButton;
 
 	// Use this for initialization
@@ -28,6 +33,10 @@ public class Selector : MonoBehaviour {
 		}
 
 		if (Input.GetMouseButtonUp(0)) {
+			if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject ()) {
+				return;
+			}
+
 			RaycastHit hit;
 			var ray = Camera.main.ScreenPointToRay (Input.mousePosition);
 			if (Physics.Raycast (ray, out hit)) {
@@ -43,10 +52,10 @@ public class Selector : MonoBehaviour {
 					} else {
 						if (selected == null) {
 							selected = hit.transform.gameObject;
-							a.Selected ();
+							a.Selected (green);
 						} else if (enemySelected == null) {
 							enemySelected = hit.transform.gameObject;
-							a.Selected (true);
+							a.Selected (red);
 						}
 					}
 				}
@@ -56,9 +65,9 @@ public class Selector : MonoBehaviour {
 		}
 
 		if (selected != null && enemySelected != null) {
-			attackButton.enabled = true;
+			attackButton.gameObject.SetActive (true);
 		} else {
-			attackButton.enabled = false;
+			attackButton.gameObject.SetActive (false);
 		}
 	}
 
@@ -77,6 +86,19 @@ public class Selector : MonoBehaviour {
 	}
 
 	public void Attack() {
-		
+		if (selected == null || enemySelected == null) {
+			return;
+		}
+
+		GameObject effect;
+		AttackEffect effectScript = selected.GetComponent<AttackEffect> ();
+		if (effectScript) {
+			effect = effectScript.attack ?? defaultAttackEffect;
+		} else {
+			effect = defaultAttackEffect;
+		}
+
+		var ef = Instantiate (effect, enemySelected.transform.position, enemySelected.transform.rotation) as GameObject;
+		ef.transform.parent = enemySelected.transform;
 	}
 }

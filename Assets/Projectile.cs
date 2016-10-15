@@ -13,7 +13,7 @@ public class Projectile : MonoBehaviour {
 
 		if (transform.position == target.position) {
 			if (hitEffect != null) {
-				Instantiate (hitEffect, target.position, target.rotation, target);
+				(Instantiate (hitEffect, target.position, target.rotation) as GameObject).transform.parent = target.transform;
 			}
 			Destroy (gameObject);
 		}
