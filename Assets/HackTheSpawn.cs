@@ -8,7 +8,7 @@ public class HackTheSpawn : MonoBehaviour {
 	void Start () {
 		// So hackity hack hack... I hate myself for writing this
 		foreach (var t in stuff) {
-			Instantiate(t, transform);
+			Instantiate(t, transform.position, transform.rotation, transform);
 		}
 	}
 	

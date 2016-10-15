@@ -1,10 +1,13 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class Selector : MonoBehaviour {
 
 	GameObject selected;
 	GameObject enemySelected;
+
+	public Button attackButton;
 
 	// Use this for initialization
 	void Start () {
@@ -51,6 +54,12 @@ public class Selector : MonoBehaviour {
 				DeselectAll ();
 			}
 		}
+
+		if (selected != null && enemySelected != null) {
+			attackButton.enabled = true;
+		} else {
+			attackButton.enabled = false;
+		}
 	}
 
 	void DeselectAll() {
@@ -65,5 +74,9 @@ public class Selector : MonoBehaviour {
 			s.Deselected ();
 			enemySelected = null;
 		}
+	}
+
+	public void Attack() {
+		
 	}
 }
