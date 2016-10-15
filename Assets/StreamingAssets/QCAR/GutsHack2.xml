@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <QCARConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="qcar_config.xsd">
   <Tracking>
+    <ImageTarget name="board_indicator" size="1.000000 0.487395" />
     <ImageTarget name="githubAvatar" size="1.000000 1.263441" />
+    <ImageTarget name="star" size="1.000000 1.333333" />
+    <ImageTarget name="square" size="1.000000 1.333333" />
     <ImageTarget name="pic" size="30.000000 17.360407" />
+    <ImageTarget name="BlueEyesSilverDragonQR" size="20.000000 20.000000" />
+    <ImageTarget name="BlueEyesSilverDragon" size="30.000000 30.000000" />
+    <ImageTarget name="M2iOQw" size="1.000000 1.000000" />
   </Tracking>
 </QCARConfig>
