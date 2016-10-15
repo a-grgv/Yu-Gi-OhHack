@@ -7,6 +7,11 @@ public class Selector : MonoBehaviour {
 	GameObject selected;
 	GameObject enemySelected;
 
+	public GameObject defaultHitEffect;
+
+	public GameObject green;
+	public GameObject red;
+
 	public Button attackButton;
 
 	// Use this for initialization
@@ -43,10 +48,10 @@ public class Selector : MonoBehaviour {
 					} else {
 						if (selected == null) {
 							selected = hit.transform.gameObject;
-							a.Selected ();
+							a.Selected (green);
 						} else if (enemySelected == null) {
 							enemySelected = hit.transform.gameObject;
-							a.Selected (true);
+							a.Selected (red);
 						}
 					}
 				}
@@ -77,6 +82,10 @@ public class Selector : MonoBehaviour {
 	}
 
 	public void Attack() {
-		
+		if (selected == null || enemySelected == null) {
+			return;
+		}
+
+
 	}
 }
