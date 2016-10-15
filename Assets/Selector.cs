@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Networking;
 using System.Collections;
 
-public class Selector : MonoBehaviour {
+public class Selector : NetworkBehaviour {
 
 	GameObject selected;
 	GameObject enemySelected;
@@ -12,7 +13,13 @@ public class Selector : MonoBehaviour {
 	public GameObject green;
 	public GameObject red;
 
-	public Button attackButton;
+	Button attackButton;
+
+	void Start() {
+		NetworkManager.singleton.networkAddress = Network.player.ipAddress;
+
+		attackButton = GameObject.FindGameObjectWithTag ("GameController").GetComponent<ButtonHolder>().attackButton;
+	}
 
 	void FixedUpdate () {
 		foreach (var touch in Input.touches) {
@@ -27,6 +34,25 @@ public class Selector : MonoBehaviour {
 	}
 
 	void DoSelectMagic(Vector3 pos) {
+		DoSelectMagicLogic (pos);
+		if (isServer) {
+			RpcDoSelectMagic (pos);
+		} else {
+			CmdDoSelectMagic (pos);
+		}
+	}
+
+	[Command]
+	void CmdDoSelectMagic(Vector3 pos) {
+		DoSelectMagicLogic (pos);
+	}
+
+	[ClientRpc]
+	void RpcDoSelectMagic(Vector3 pos) {
+		DoSelectMagicLogic (pos);
+	}
+
+	void DoSelectMagicLogic(Vector3 pos) {
 		if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject ()) {
 			return;
 		}
@@ -79,6 +105,25 @@ public class Selector : MonoBehaviour {
 	}
 
 	public void Attack() {
+		AttackLogic ();
+		if (isServer) {
+			RpcAttack ();
+		} else {
+			CmdAttack ();
+		}
+	}
+
+	[Command]
+	void CmdAttack() {
+		AttackLogic ();
+	}
+
+	[ClientRpc]
+	void RpcAttack() {
+		AttackLogic ();
+	}
+
+	void AttackLogic() {
 		if (selected == null || enemySelected == null) {
 			return;
 		}
