@@ -16,6 +16,7 @@ public class Selector : NetworkBehaviour {
 	public GameObject[] hits;
 
 	Button attackButton;
+	Button cancelButton;
 
 	public bool isLocal = false;
 
@@ -23,6 +24,7 @@ public class Selector : NetworkBehaviour {
 		NetworkManager.singleton.networkAddress = Network.player.ipAddress;
 
 		attackButton = GameObject.FindGameObjectWithTag ("GameController").GetComponent<ButtonHolder>().attackButton;
+		cancelButton = GameObject.FindGameObjectWithTag ("GameController").GetComponent<ButtonHolder>().cancelButton;
 	}
 
 	public override void OnStartLocalPlayer()
@@ -45,40 +47,53 @@ public class Selector : NetworkBehaviour {
 			return;
 		}
 
-		RaycastHit hit;
-		var ray = Camera.main.ScreenPointToRay (pos);
-		if (Physics.Raycast (ray, out hit)) {
-			if (hit.transform.gameObject.CompareTag ("Player")) {
-				Selectable a = hit.transform.GetComponent<Selectable> ();
-				if (a.isSelected ()) {
-					a.Deselected ();
-					if (selected == hit.transform.gameObject) {
-						selected = null;
-					} else if (enemySelected == hit.transform.gameObject) {
-						enemySelected = null;
-					}
-				} else {
-					if (selected == null) {
-						selected = hit.transform.gameObject;
-						a.Selected (green);
-					} else if (enemySelected == null) {
-						enemySelected = hit.transform.gameObject;
-						a.Selected (red);
+		var bothSelected = selected != null && enemySelected != null;
+
+		if (!bothSelected) {
+			RaycastHit hit;
+			var ray = Camera.main.ScreenPointToRay (pos);
+			if (Physics.Raycast (ray, out hit)) {
+				if (hit.transform.gameObject.CompareTag ("Player")) {
+					Selectable a = hit.transform.GetComponent<Selectable> ();
+					if (a.isSelected ()) {
+						a.Deselected ();
+						if (selected == hit.transform.gameObject) {
+							selected = null;
+						} else if (enemySelected == hit.transform.gameObject) {
+							enemySelected = null;
+						}
+					} else {
+						if (selected == null) {
+							selected = hit.transform.gameObject;
+							a.Selected (green);
+						} else if (enemySelected == null) {
+							enemySelected = hit.transform.gameObject;
+							a.Selected (red);
+						}
 					}
 				}
+			} else {
+				DeselectAll ();
 			}
-		} else {
-			DeselectAll ();
 		}
 
-		if (selected != null && enemySelected != null) {
+		bothSelected = selected != null && enemySelected != null;
+		var eitherSelected = selected != null || enemySelected != null;
+
+		if (eitherSelected) {
+			cancelButton.gameObject.SetActive (true);
+		} else {
+			cancelButton.gameObject.SetActive (false);
+		}
+
+		if (bothSelected) {
 			attackButton.gameObject.SetActive (true);
 		} else {
 			attackButton.gameObject.SetActive (false);
 		}
 	}
 
-	void DeselectAll() {
+	public void DeselectAll() {
 		if (selected != null) {
 			Selectable s = selected.GetComponent<Selectable> ();
 			s.Deselected ();
@@ -92,6 +107,7 @@ public class Selector : NetworkBehaviour {
 		}
 
 		attackButton.gameObject.SetActive (false);
+		cancelButton.gameObject.SetActive (false);
 	}
 
 	public void Attack() {
