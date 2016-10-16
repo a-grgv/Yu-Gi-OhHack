@@ -34,10 +34,12 @@ public class Selector : NetworkBehaviour {
 	public override void OnStartLocalPlayer()
 	{
 		isLocal = true;
+		Debug.Log ("123");
 		isMyTurn = isServer;
 	}
 
 	void SetTurnText() {
+		Debug.Log (isMyTurn);
 		if (isMyTurn) {
 			turnDisplay.text = "Your turn";
 		} else {
@@ -171,7 +173,9 @@ public class Selector : NetworkBehaviour {
 		var ef = Instantiate (go, enemy.transform.position, enemy.transform.rotation) as GameObject;
 		ef.transform.parent = enemy.transform;
 
-		isMyTurn = !isMyTurn;
-		SetTurnText();
+		if (isLocalPlayer) {
+			isMyTurn = !isMyTurn;
+			SetTurnText ();
+		}
 	}
 }
