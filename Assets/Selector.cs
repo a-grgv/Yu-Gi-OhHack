@@ -13,12 +13,21 @@ public class Selector : NetworkBehaviour {
 	public GameObject green;
 	public GameObject red;
 
+	public GameObject[] hits;
+
 	Button attackButton;
+
+	public bool isLocal = false;
 
 	void Start() {
 		NetworkManager.singleton.networkAddress = Network.player.ipAddress;
 
 		attackButton = GameObject.FindGameObjectWithTag ("GameController").GetComponent<ButtonHolder>().attackButton;
+	}
+
+	public override void OnStartLocalPlayer()
+	{
+		isLocal = true;
 	}
 
 	void FixedUpdate () {
@@ -34,10 +43,10 @@ public class Selector : NetworkBehaviour {
 	}
 
 	void DoSelectMagic(Vector3 pos) {
-		DoSelectMagicLogic (pos);
 		if (isServer) {
 			RpcDoSelectMagic (pos);
 		} else {
+			DoSelectMagicLogic (pos);
 			CmdDoSelectMagic (pos);
 		}
 	}
@@ -53,6 +62,7 @@ public class Selector : NetworkBehaviour {
 	}
 
 	void DoSelectMagicLogic(Vector3 pos) {
+		Debug.Log ("123");
 		if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject ()) {
 			return;
 		}
@@ -102,41 +112,56 @@ public class Selector : NetworkBehaviour {
 			s.Deselected ();
 			enemySelected = null;
 		}
+
+		attackButton.gameObject.SetActive (false);
 	}
 
 	public void Attack() {
-		AttackLogic ();
-		if (isServer) {
-			RpcAttack ();
-		} else {
-			CmdAttack ();
-		}
-	}
-
-	[Command]
-	void CmdAttack() {
-		AttackLogic ();
-	}
-
-	[ClientRpc]
-	void RpcAttack() {
-		AttackLogic ();
-	}
-
-	void AttackLogic() {
 		if (selected == null || enemySelected == null) {
 			return;
 		}
 
-		GameObject effect;
-		AttackEffect effectScript = selected.GetComponent<AttackEffect> ();
-		if (effectScript) {
-			effect = effectScript.attack ?? defaultAttackEffect;
+		string name = enemySelected.name;
+		string hit = selected.GetComponent<AttackEffect> ().attack.name;
+		if (isServer) {
+			RpcAttack (name, hit);
 		} else {
-			effect = defaultAttackEffect;
+			AttackLogic (name, hit);
+			CmdAttack (name, hit);
+		}
+	}
+
+	[Command]
+	void CmdAttack(string name, string hit) {
+		AttackLogic (name, hit);
+	}
+
+	[ClientRpc]
+	void RpcAttack(string name, string hit) {
+		AttackLogic (name, hit);
+	}
+
+	void AttackLogic(string enemyName, string hitName) {
+		if (string.IsNullOrEmpty(enemyName) || string.IsNullOrEmpty(hitName)) {
+			return;
 		}
 
-		var ef = Instantiate (effect, enemySelected.transform.position, enemySelected.transform.rotation) as GameObject;
-		ef.transform.parent = enemySelected.transform;
+		DeselectAll ();
+
+		var enemy = GameObject.Find (enemyName);
+		if (!enemy) {
+			return;
+		}
+
+		GameObject go = defaultAttackEffect;
+		foreach (var g in hits) {
+			if (g.name == hitName) {
+				go = g;
+				break;
+			}
+		}
+
+		var ef = Instantiate (go, enemy.transform.position, enemy.transform.rotation) as GameObject;
+		ef.transform.parent = enemy.transform;
 	}
 }
