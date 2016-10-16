@@ -21,7 +21,7 @@ public class ButtonHolder : MonoBehaviour {
 	GameObject GetLocalPlayer() {
 		if (localPlayer == null) {
 			foreach (var p in GameObject.FindGameObjectsWithTag ("ActualPlayer")) {
-				if (p.GetComponent<Selector> ().isLocal) {
+				if (p.GetComponent<Selector> ().isLocalPlayer) {
 					localPlayer = p;
 					break;
 				}

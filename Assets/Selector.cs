@@ -45,6 +45,10 @@ public class Selector : NetworkBehaviour {
 	}
 
 	void FixedUpdate () {
+		if (!isLocalPlayer) {
+			return;
+		}
+
 		if (Input.GetMouseButtonUp(0)) {
 			DoSelectMagic (Input.mousePosition);
 		}
