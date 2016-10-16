@@ -31,38 +31,16 @@ public class Selector : NetworkBehaviour {
 	}
 
 	void FixedUpdate () {
-		foreach (var touch in Input.touches) {
-			if (touch.phase == TouchPhase.Began) {
-				DoSelectMagic (touch.position);
-			}
-		}
-
 		if (Input.GetMouseButtonUp(0)) {
 			DoSelectMagic (Input.mousePosition);
 		}
 	}
 
 	void DoSelectMagic(Vector3 pos) {
-		if (isServer) {
-			RpcDoSelectMagic (pos);
-		} else {
-			DoSelectMagicLogic (pos);
-			CmdDoSelectMagic (pos);
-		}
-	}
-
-	[Command]
-	void CmdDoSelectMagic(Vector3 pos) {
-		DoSelectMagicLogic (pos);
-	}
-
-	[ClientRpc]
-	void RpcDoSelectMagic(Vector3 pos) {
 		DoSelectMagicLogic (pos);
 	}
 
 	void DoSelectMagicLogic(Vector3 pos) {
-		Debug.Log ("123");
 		if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject ()) {
 			return;
 		}
