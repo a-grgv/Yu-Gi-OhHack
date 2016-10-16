@@ -9,8 +9,7 @@ public class HitEffectDestroy : MonoBehaviour {
 	void Start () {
 		ps = GetComponent<ParticleSystem> ();
 		parentScript = transform.parent.GetComponent<Selectable> ();
-		var s = GameObject.FindGameObjectWithTag ("ActualPlayer").GetComponent<Selector>();
-		parentScript.Selected (s.red);
+		parentScript.Selected ("red");
 	}
 	
 	void Update () {

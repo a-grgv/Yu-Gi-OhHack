@@ -10,9 +10,6 @@ public class Selector : NetworkBehaviour {
 
 	public GameObject defaultAttackEffect;
 
-	public GameObject green;
-	public GameObject red;
-
 	public GameObject[] hits;
 
 	Button attackButton;
@@ -80,10 +77,10 @@ public class Selector : NetworkBehaviour {
 					} else {
 						if (selected == null) {
 							selected = hit.transform.gameObject;
-							a.Selected (green);
+							a.Selected ("green");
 						} else if (enemySelected == null) {
 							enemySelected = hit.transform.gameObject;
-							a.Selected (red);
+							a.Selected ("red");
 						}
 					}
 				}
@@ -151,6 +148,15 @@ public class Selector : NetworkBehaviour {
 	}
 
 	void AttackLogic(string enemyName, string hitName) {
+		if (!isLocalPlayer) {
+			var actualLocalPlayer = GetLocalPlayer ();
+			if (actualLocalPlayer != null) {
+				actualLocalPlayer.GetComponent<Selector> ().ToggleTurn ();
+			}
+		} else {
+			ToggleTurn ();
+		}
+
 		if (string.IsNullOrEmpty(enemyName) || string.IsNullOrEmpty(hitName)) {
 			return;
 		}
@@ -172,10 +178,19 @@ public class Selector : NetworkBehaviour {
 
 		var ef = Instantiate (go, enemy.transform.position, enemy.transform.rotation) as GameObject;
 		ef.transform.parent = enemy.transform;
+	}
 
-		if (isLocalPlayer) {
-			isMyTurn = !isMyTurn;
-			SetTurnText ();
+	public void ToggleTurn() {
+		isMyTurn = !isMyTurn;
+		SetTurnText ();
+	}
+
+	GameObject GetLocalPlayer() {
+		foreach (var p in GameObject.FindGameObjectsWithTag ("ActualPlayer")) {
+			if (p.GetComponent<Selector> ().isLocal) {
+				return p;
+			}
 		}
+		return null;
 	}
 }
