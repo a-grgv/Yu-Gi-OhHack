@@ -16,7 +16,7 @@ public class Selectable : MonoBehaviour {
 	}
 
 	public bool isSelected() {
-		return circle != null;
+		return c.gameObject.activeSelf;
 	}
 
 	public void Selected(string color) {
