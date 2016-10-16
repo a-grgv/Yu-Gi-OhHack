@@ -15,9 +15,11 @@ public class HitEffectDestroy : MonoBehaviour {
 	
 	void Update () {
 		duration += ps.duration * Time.deltaTime;
-		if (duration >= ps.duration + 2) {
-			Destroy (gameObject);
+		if (duration >= ps.duration + 1) {
+			transform.parent.gameObject.SetActive(false);
+			GameObject.FindGameObjectWithTag ("GameController").GetComponent<ButtonHolder>().Recreate(transform.parent.gameObject);
 			parentScript.Deselected ();
+			Destroy (gameObject);
 		}
 	}
 }

@@ -17,19 +17,32 @@ public class Selector : NetworkBehaviour {
 
 	Button attackButton;
 	Button cancelButton;
+	Text turnDisplay;
 
 	public bool isLocal = false;
+	public bool isMyTurn = true;
 
 	void Start() {
 		NetworkManager.singleton.networkAddress = Network.player.ipAddress;
 
 		attackButton = GameObject.FindGameObjectWithTag ("GameController").GetComponent<ButtonHolder>().attackButton;
 		cancelButton = GameObject.FindGameObjectWithTag ("GameController").GetComponent<ButtonHolder>().cancelButton;
+		turnDisplay = GameObject.FindGameObjectWithTag ("GameController").GetComponent<ButtonHolder>().turnDisplay;
+		SetTurnText ();
 	}
 
 	public override void OnStartLocalPlayer()
 	{
 		isLocal = true;
+		isMyTurn = isServer;
+	}
+
+	void SetTurnText() {
+		if (isMyTurn) {
+			turnDisplay.text = "Your turn";
+		} else {
+			turnDisplay.text = "Opponent's turn";
+		}
 	}
 
 	void FixedUpdate () {
@@ -49,7 +62,7 @@ public class Selector : NetworkBehaviour {
 
 		var bothSelected = selected != null && enemySelected != null;
 
-		if (!bothSelected) {
+		if (!bothSelected && isMyTurn) {
 			RaycastHit hit;
 			var ray = Camera.main.ScreenPointToRay (pos);
 			if (Physics.Raycast (ray, out hit)) {
@@ -157,5 +170,8 @@ public class Selector : NetworkBehaviour {
 
 		var ef = Instantiate (go, enemy.transform.position, enemy.transform.rotation) as GameObject;
 		ef.transform.parent = enemy.transform;
+
+		isMyTurn = !isMyTurn;
+		SetTurnText();
 	}
 }

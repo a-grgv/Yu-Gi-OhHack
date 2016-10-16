@@ -5,14 +5,17 @@ using System.Collections;
 public class ButtonHolder : MonoBehaviour {
 	public Button attackButton;
 	public Button cancelButton;
+	public Text turnDisplay;
 
 	private GameObject localPlayer;
 
 	void Start () {
 		attackButton = GameObject.Find ("AttackButton").GetComponent<Button> ();
 		cancelButton = GameObject.Find ("ClearButton").GetComponent<Button> ();
+		turnDisplay = GameObject.Find ("TurnText").GetComponent<Text> ();
 		attackButton.gameObject.SetActive(false);
 		cancelButton.gameObject.SetActive(false);
+		turnDisplay.text = "";
 	}
 
 	GameObject GetLocalPlayer() {
@@ -42,5 +45,14 @@ public class ButtonHolder : MonoBehaviour {
 		if (p != null) {
 			p.GetComponent<Selector> ().DeselectAll ();
 		}
+	}
+
+	public void Recreate(GameObject o) {
+		StartCoroutine(RecreateAfter(o));
+	}
+
+	IEnumerator RecreateAfter(GameObject o) {
+		yield return new WaitForSeconds(10);
+		o.SetActive (true);
 	}
 }
